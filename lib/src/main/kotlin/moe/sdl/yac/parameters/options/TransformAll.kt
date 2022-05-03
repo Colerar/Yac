@@ -3,10 +3,8 @@
 
 package moe.sdl.yac.parameters.options
 
-import moe.sdl.yac.core.Abort
 import moe.sdl.yac.core.MissingOption
 import moe.sdl.yac.output.HelpFormatter
-import moe.sdl.yac.output.TermUi
 
 /**
  * Transform all calls to the option to the final option type.
@@ -162,51 +160,6 @@ fun <A, B, EachT, ValueT> OptionWithValues<List<Pair<A, B>>, EachT, ValueT>.toMa
  */
 fun RawOption.associate(delimiter: String = "="): OptionWithValues<Map<String, String>, Pair<String, String>, Pair<String, String>> {
   return splitPair(delimiter).multiple().toMap()
-}
-
-/**
- * If the option isn't given on the command line, prompt the user for manual input.
- *
- * Note that if the option is defined with a [validate] or [check], that validation will be run each
- * time the user enters a value. This means that, unlike normal options, the validation for prompt
- * options cannot reference other parameters.
- *
- * @param text The text to prompt the user with
- * @param default The default value to use if no input is given. If null, the prompt will be repeated until
- *   input is given.
- * @param hideInput If true, user input will not be shown on the screen. Useful for passwords and sensitive
- *   input.
- * @param requireConfirmation If true, the user will be required to enter the same value twice before it is
- *   accepted.
- * @param confirmationPrompt If [requireConfirmation] is true, this will be used to ask for input again.
- * @param promptSuffix Text to display directly after [text]. Defaults to ": ".
- * @param showDefault Show [default] to the user in the prompt.
- */
-fun <T : Any> NullableOption<T, T>.prompt(
-  text: String? = null,
-  default: String? = null,
-  hideInput: Boolean = false,
-  requireConfirmation: Boolean = false,
-  confirmationPrompt: String = "Repeat for confirmation: ",
-  promptSuffix: String = ": ",
-  showDefault: Boolean = true,
-): OptionWithValues<T, T, T> = transformAll { invocations ->
-  val promptText = text ?: longestName()?.let { splitOptionPrefix(it).second }
-    ?.replace(Regex("\\W"), " ")?.capitalize2() ?: "Value"
-
-  when (val provided = invocations.lastOrNull()) {
-    null -> TermUi.prompt(
-      promptText, default, hideInput, requireConfirmation,
-      confirmationPrompt, promptSuffix, showDefault, context.console
-    ) {
-      val ctx = OptionCallTransformContext("", this, context)
-      transformAll(listOf(transformEach(ctx, listOf(transformValue(ctx, it)))))?.also { v ->
-        @Suppress("UNCHECKED_CAST")
-        (option as? OptionWithValues<T, T, T>)?.transformValidator?.invoke(this, v)
-      }
-    }
-    else -> provided
-  } ?: throw Abort()
 }
 
 // the stdlib capitalize was deprecated without a replacement

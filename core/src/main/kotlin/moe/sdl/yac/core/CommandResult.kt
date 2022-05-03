@@ -8,6 +8,6 @@ sealed interface CommandResult {
    * @param message message to describe error for debug
    * @param userMessage message to describe error for user, default is the same as [message]
    */
-  class Error(message: String?, userMessage: String? = message, cause: Exception? = null) :
+  class Error(message: String?, val userMessage: String? = message, cause: Exception? = null) :
     CommandResult, IllegalStateException(message, cause)
 }

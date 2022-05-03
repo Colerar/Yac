@@ -1,5 +1,5 @@
 rootProject.name = "Yac"
-include("lib")
+include("core")
 
 plugins {
   // Dependency Version Manager - https://jmfayard.github.io/refreshVersions

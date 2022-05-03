@@ -10,7 +10,6 @@ open class NoOpCliktCommand(
   invokeWithoutSubcommand: Boolean = false,
   printHelpOnEmptyArgs: Boolean = false,
   helpTags: Map<String, String> = emptyMap(),
-  autoCompleteEnvvar: String? = "",
   allowMultipleSubcommands: Boolean = false,
 ) : CliktCommand(
   help,
@@ -19,7 +18,6 @@ open class NoOpCliktCommand(
   invokeWithoutSubcommand,
   printHelpOnEmptyArgs,
   helpTags,
-  autoCompleteEnvvar,
   allowMultipleSubcommands
 ) {
   override fun run() = Unit

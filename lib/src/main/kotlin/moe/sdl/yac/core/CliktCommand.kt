@@ -33,8 +33,6 @@ import moe.sdl.yac.parsers.Parser
  * @param printHelpOnEmptyArgs If this command is called with no values on the command line, print a
  *   help message (by throwing [PrintHelpMessage]) if this is true, otherwise run normally.
  * @param helpTags Extra information about this option to pass to the help formatter.
- * @param autoCompleteEnvvar The envvar to use to enable shell autocomplete script generation. Set
- *   to null to disable generation.
  * @param allowMultipleSubcommands If true, allow multiple of this command's subcommands to be
  *   called sequentially. This will disable `allowInterspersedArgs` on the context of this command an
  *   its descendants. This functionality is experimental, and may change in a future release.
@@ -53,7 +51,6 @@ abstract class CliktCommand(
   val invokeWithoutSubcommand: Boolean = false,
   val printHelpOnEmptyArgs: Boolean = false,
   val helpTags: Map<String, String> = emptyMap(),
-  private val autoCompleteEnvvar: String? = "",
   internal val allowMultipleSubcommands: Boolean = false,
   internal val treatUnknownOptionsAsArgs: Boolean = false,
 ) : ParameterHolder {

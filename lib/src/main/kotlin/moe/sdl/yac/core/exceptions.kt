@@ -11,7 +11,7 @@ import moe.sdl.yac.parameters.options.longestName
  *
  * @property error If true, print "Aborted" and exit with an error code. Otherwise, exit with no error code.
  */
-class Abort(val error: Boolean = true) : RuntimeException()
+internal class Abort(val error: Boolean = true) : RuntimeException()
 
 /**
  * An exception during command line processing that should be shown to the user.

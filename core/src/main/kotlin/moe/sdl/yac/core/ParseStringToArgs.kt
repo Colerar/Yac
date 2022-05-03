@@ -10,7 +10,7 @@ private val QUOTE_END = Regex("""(?<!\\)"\s|(?<!\\)"$""")
  *
  * for example, `this is "command foo" char\ escape` split to `["this", "is", "command foo", "char escape"]`
  */
-internal fun String.parseToArgs(): List<String> =
+fun String.parseToArgs(): List<String> =
   if (isBlank()) {
     emptyList()
   } else {

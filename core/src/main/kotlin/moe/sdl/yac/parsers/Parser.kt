@@ -204,13 +204,6 @@ internal object Parser {
         }
 
         command.currentContext.invokedSubcommand = subcommand
-        if (command.currentContext.printExtraMessages) {
-          val console = command.currentContext.console
-          for (warning in command.messages) {
-            console.print(warning, error = true)
-            console.print(console.lineSeparator, error = true)
-          }
-        }
 
         command.run()
       } else if (subcommand == null && positionalArgs.isNotEmpty()) {

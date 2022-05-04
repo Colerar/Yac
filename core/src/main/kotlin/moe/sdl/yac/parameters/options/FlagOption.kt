@@ -59,7 +59,7 @@ class FlagOption<T> internal constructor(
 
   override fun finalize(context: Context, invocations: List<OptionParser.Invocation>) {
     val transformContext = OptionTransformContext(this, context)
-    value = when (val v = getFinalValue(context, invocations, envvar)) {
+    value = when (val v = getFinalValue(context, invocations)) {
       is FinalValue.Parsed -> transformAll(transformContext, invocations.map { it.name })
       is FinalValue.Sourced -> {
         if (v.values.size != 1 || v.values[0].values.size != 1) {

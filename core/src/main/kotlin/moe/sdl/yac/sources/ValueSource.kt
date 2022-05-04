@@ -1,10 +1,7 @@
 package moe.sdl.yac.sources
 
 import moe.sdl.yac.core.Context
-import moe.sdl.yac.parameters.options.FlagOption
 import moe.sdl.yac.parameters.options.Option
-import moe.sdl.yac.parameters.options.OptionWithValues
-import moe.sdl.yac.parameters.options.inferEnvvar
 import moe.sdl.yac.parameters.options.longestName
 import moe.sdl.yac.parameters.options.splitOptionPrefix
 
@@ -67,18 +64,6 @@ interface ValueSource {
       k = k.replace("-", replaceDashes)
       if (uppercase) k = k.uppercase()
       prefix + k
-    }
-
-    /**
-     * Create a function that will return string keys that match the key used for environment variables.
-     */
-    fun envvarKey(): (Context, Option) -> String = { context, option ->
-      val env = when (option) {
-        is OptionWithValues<*, *, *> -> option.envvar
-        is FlagOption<*> -> option.envvar
-        else -> null
-      }
-      inferEnvvar(option.names, env, context.autoEnvvarPrefix) ?: ""
     }
   }
 }

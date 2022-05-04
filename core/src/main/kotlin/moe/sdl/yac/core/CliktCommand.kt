@@ -87,8 +87,8 @@ abstract class CliktCommand(
 
   private fun registeredOptionNames() = _options.flatMapTo(mutableSetOf()) { it.names }
 
-  private fun createContext(argv: List<String>, parent: Context?, ancestors: List<CliktCommand>) {
-    _context = Context.build(this, parent, argv, _contextConfig)
+  private fun createContext(parent: Context?, ancestors: List<CliktCommand>) {
+    _context = Context.build(this, parent, _contextConfig)
 
     if (allowMultipleSubcommands) {
       require(currentContext.ancestors().drop(1).none { it.command.allowMultipleSubcommands }) {
@@ -105,7 +105,7 @@ abstract class CliktCommand(
     for (command in _subcommands) {
       val a = (ancestors + parent?.command).filterNotNull()
       check(command !in a) { "Command ${command.commandName} already registered" }
-      command.createContext(argv, currentContext, a)
+      command.createContext(currentContext, a)
     }
   }
 
@@ -117,7 +117,7 @@ abstract class CliktCommand(
   }
 
   private fun getCommandNameWithParents(): String {
-    if (_context == null) createContext(emptyList(), null, emptyList())
+    if (_context == null) createContext(null, emptyList())
     return currentContext.commandNameWithParents().joinToString(" ")
   }
 
@@ -237,7 +237,7 @@ abstract class CliktCommand(
    * You should use [main] instead unless you want to handle output yourself.
    */
   fun parse(argv: List<String>, parentContext: Context? = null) {
-    createContext(argv, parentContext, emptyList())
+    createContext(parentContext, emptyList())
     Parser.parse(argv, this.currentContext)
   }
 

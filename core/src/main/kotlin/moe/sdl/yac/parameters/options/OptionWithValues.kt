@@ -122,7 +122,7 @@ class OptionWithValues<AllT, EachT, ValueT> internal constructor(
     private set
 
   override fun finalize(context: Context, invocations: List<Invocation>) {
-    val inv = when (val v = getFinalValue(context, invocations, envvar)) {
+    val inv = when (val v = getFinalValue(context, invocations)) {
       is FinalValue.Parsed -> {
         when (valueSplit) {
           null -> invocations

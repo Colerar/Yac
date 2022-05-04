@@ -38,7 +38,7 @@ class CoOccurringOptionGroup<GroupT : OptionGroup, OutT> internal constructor(
   override fun finalize(context: Context, invocationsByOption: Map<Option, List<OptionParser.Invocation>>) {
     occurred = invocationsByOption.isNotEmpty() || group.options.any {
       // Also trigger the group if any of the options have values from envvars or value sources
-      it is OptionWithValues<*, *, *> && it.getFinalValue(context, emptyList(), it.envvar) !is FinalValue.Parsed
+      it is OptionWithValues<*, *, *> && it.getFinalValue(context, emptyList()) !is FinalValue.Parsed
     }
     if (occurred) group.finalize(context, invocationsByOption)
     value = transform(occurred, group, context)

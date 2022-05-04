@@ -151,15 +151,14 @@ internal sealed class FinalValue {
 internal fun Option.getFinalValue(
   context: Context,
   invocations: List<OptionParser.Invocation>,
-  envvar: String?,
 ): FinalValue {
   return when {
     invocations.isNotEmpty() -> FinalValue.Parsed(invocations)
     context.readEnvvarBeforeValueSource -> {
-      readEnvVar(context, envvar) ?: readValueSource(context)
+      readValueSource(context)
     }
     else -> {
-      readValueSource(context) ?: readEnvVar(context, envvar)
+      readValueSource(context)
     }
   } ?: FinalValue.Parsed(emptyList())
 }
@@ -167,9 +166,4 @@ internal fun Option.getFinalValue(
 private fun Option.readValueSource(context: Context): FinalValue? {
   return context.valueSource?.getValues(context, this)?.ifEmpty { null }
     ?.let { FinalValue.Sourced(it) }
-}
-
-private fun Option.readEnvVar(context: Context, envvar: String?): FinalValue? {
-  val env = inferEnvvar(names, envvar, context.autoEnvvarPrefix) ?: return null
-  return context.readEnvvar(env)?.let { FinalValue.Envvar(env, it) }
 }

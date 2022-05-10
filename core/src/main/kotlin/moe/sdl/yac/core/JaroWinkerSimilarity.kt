@@ -37,7 +37,7 @@ private fun jaroSimilarity(s1: String, s2: String): Double {
   }
 }
 
-internal fun jaroWinklerSimilarity(s1: String, s2: String): Double {
+fun jaroWinklerSimilarity(s1: String, s2: String): Double {
   // Unlike classic Jaro-Winkler, we don't set a limit on the prefix length
   val prefixLength = s1.commonPrefixWith(s2).length
   val jaro = jaroSimilarity(s1, s2)

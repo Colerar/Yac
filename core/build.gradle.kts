@@ -15,6 +15,7 @@ repositories {
 dependencies {
   testImplementation(Kotlin.Test.common)
   testImplementation(Kotlin.Test.junit5)
+  testImplementation(KotlinX.coroutines.core)
 }
 
 tasks.test {

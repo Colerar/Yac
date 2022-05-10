@@ -23,11 +23,11 @@ private data class OptInvocation(val opt: Option, val inv: Invocation)
 private data class OptParseResult(val consumed: Int, val unknown: List<String>, val known: List<OptInvocation>)
 
 internal object Parser {
-  fun parse(argv: List<String>, context: Context) {
+  suspend fun parse(argv: List<String>, context: Context) {
     parse(argv, context, 0, true)
   }
 
-  private fun parse(
+  private suspend fun parse(
     argv: List<String>,
     context: Context,
     startingArgI: Int,

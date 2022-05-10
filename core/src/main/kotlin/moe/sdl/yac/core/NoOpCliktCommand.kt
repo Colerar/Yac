@@ -20,5 +20,5 @@ open class NoOpCliktCommand(
   helpTags,
   allowMultipleSubcommands
 ) {
-  override fun run() = Unit
+  override suspend fun run() = Unit
 }

@@ -236,12 +236,12 @@ abstract class CliktCommand(
    *
    * You should use [main] instead unless you want to handle output yourself.
    */
-  fun parse(argv: List<String>, parentContext: Context? = null) {
+  suspend fun parse(argv: List<String>, parentContext: Context? = null) {
     createContext(parentContext, emptyList())
     Parser.parse(argv, this.currentContext)
   }
 
-  fun parse(argv: Array<String>, parentContext: Context? = null) {
+  suspend fun parse(argv: Array<String>, parentContext: Context? = null) {
     parse(argv.asList(), parentContext)
   }
 
@@ -251,7 +251,7 @@ abstract class CliktCommand(
    * This function calls [parse] and catches and [CliktError]s that are thrown. Other errors are allowed to
    * pass through.
    */
-  fun main(argv: List<String>): CommandResult {
+  suspend fun main(argv: List<String>): CommandResult {
     return try {
       parse(argv)
       CommandResult.Success
@@ -268,9 +268,9 @@ abstract class CliktCommand(
     }
   }
 
-  fun main(argv: Array<out String>) = main(argv.asList())
+  suspend fun main(argv: Array<out String>) = main(argv.asList())
 
-  fun main(rawString: String) = main(rawString.parseToArgs())
+  suspend fun main(rawString: String) = main(rawString.parseToArgs())
 
   /**
    * Perform actions after parsing is complete and this command is invoked.
@@ -281,7 +281,7 @@ abstract class CliktCommand(
    * If one of this command's subcommands is invoked, this is called before the subcommand's arguments are
    * parsed.
    */
-  abstract fun run()
+  abstract suspend fun run()
 
   override fun toString() = buildString {
     append("<${this@CliktCommand.classSimpleName()} name=$commandName")

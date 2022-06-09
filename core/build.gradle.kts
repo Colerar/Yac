@@ -22,6 +22,11 @@ tasks.test {
   useJUnitPlatform()
 }
 
+java {
+  withJavadocJar()
+  withSourcesJar()
+}
+
 tasks.withType<KotlinCompile> {
   kotlinOptions.apply {
     jvmTarget = "17"
@@ -53,11 +58,6 @@ if (secretPropsFile.exists()) {
   ext["ossrhPassword"] = System.getenv("OSSRH_PASSWORD")
 }
 
-
-val javadocJar by tasks.registering(Jar::class) {
-  archiveClassifier.set("javadoc")
-}
-
 fun getExtraString(name: String) = ext[name]?.toString()
 
 publishing {
@@ -81,9 +81,6 @@ publishing {
   }
 
   publications.withType<MavenPublication> {
-
-    artifact(javadocJar.get())
-
     pom {
       name.set("Yac")
       description.set("Yet Another Console based on Clikt, not only for CLI")

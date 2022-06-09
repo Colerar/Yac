@@ -1,6 +1,6 @@
 allprojects {
   group = "moe.sdl.yac"
-  version = "0.1.1-SNAPSHOT"
+  version = "1.0.0"
 
 
   repositories {

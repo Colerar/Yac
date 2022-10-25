@@ -1,6 +1,5 @@
 package moe.sdl.yac.core
 
-import moe.sdl.yac.mpp.readEnvvar
 import moe.sdl.yac.output.CliktHelpFormatter
 import moe.sdl.yac.output.HelpFormatter
 import moe.sdl.yac.output.Localization
@@ -34,7 +33,7 @@ typealias TypoSuggestor = (enteredValue: String, possibleValues: List<String>) -
  *   names and filters the list down to values to suggest to the user.
  */
 
-class Context @JvmOverloads constructor(
+class Context constructor(
   val parent: Context?,
   val command: CliktCommand,
   val allowInterspersedArgs: Boolean,
@@ -46,7 +45,6 @@ class Context @JvmOverloads constructor(
   val valueSource: ValueSource?,
   val correctionSuggestor: TypoSuggestor,
   val localization: Localization,
-  val readEnvvar: (String) -> String? = ::readEnvvar,
 ) {
   var invokedSubcommand: CliktCommand? = null
     internal set
@@ -151,15 +149,6 @@ class Context @JvmOverloads constructor(
      * Localized strings to use for help output and error reporting.
      */
     var localization: Localization = defaultLocalization
-
-    /**
-     * A function called by Clikt to get a parameter value from a given environment variable
-     *
-     * The function returns `null` if the envvar is not defined.
-     *
-     * You can set this to read from a map or other source during tests.
-     */
-    var envvarReader: (key: String) -> String? = parent?.readEnvvar ?: ::readEnvvar
   }
 
   companion object {
@@ -177,7 +166,6 @@ class Context @JvmOverloads constructor(
           parent, command, interspersed,
           helpOptionNames, formatter, tokenTransformer, expandArgumentFiles,
           readEnvvarBeforeValueSource, valueSource, correctionSuggestor, localization,
-          envvarReader
         )
       }
     }

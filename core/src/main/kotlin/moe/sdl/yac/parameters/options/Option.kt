@@ -5,7 +5,6 @@ import moe.sdl.yac.core.Context
 import moe.sdl.yac.core.GroupableOption
 import moe.sdl.yac.core.ParameterHolder
 import moe.sdl.yac.core.StaticallyGroupedOption
-import moe.sdl.yac.mpp.isLetterOrDigit
 import moe.sdl.yac.output.HelpFormatter
 import moe.sdl.yac.parsers.OptionParser
 import moe.sdl.yac.sources.ValueSource
@@ -104,13 +103,9 @@ internal fun inferOptionNames(names: Set<String>, propertyName: String): Set<Str
   return setOf(normalizedName)
 }
 
-internal fun inferEnvvar(names: Set<String>, envvar: String?, autoEnvvarPrefix: String?): String? {
-  if (envvar != null) return envvar
-  if (names.isEmpty() || autoEnvvarPrefix == null) return null
-  val name = splitOptionPrefix(names.maxByOrNull { it.length }!!).second
-  if (name.isEmpty()) return null
-  return autoEnvvarPrefix + "_" + name.replace(Regex("\\W"), "_").uppercase()
-}
+private val LETTER_OR_DIGIT_RE = Regex("""[a-zA-Z0-9]""")
+
+private fun isLetterOrDigit(c: Char): Boolean = LETTER_OR_DIGIT_RE.matches(c.toString())
 
 /** Split an option token into a pair of prefix to simple name. */
 internal fun splitOptionPrefix(name: String): Pair<String, String> =

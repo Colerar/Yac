@@ -1,8 +1,5 @@
 package moe.sdl.yac.output
 
-import moe.sdl.yac.mpp.graphemeLengthMpp
-import moe.sdl.yac.mpp.readEnvvar
-
 @Suppress("MemberVisibilityCanBePrivate")
 open class CliktHelpFormatter(
   protected val localization: Localization = defaultLocalization,
@@ -15,10 +12,7 @@ open class CliktHelpFormatter(
   protected val showDefaultValues: Boolean = false,
   protected val showRequiredTag: Boolean = false,
 ) : HelpFormatter {
-  protected val width: Int = when (width) {
-    null -> minOf(maxWidth, readEnvvar("COLUMNS")?.toInt() ?: maxWidth)
-    else -> width
-  }
+  protected val width: Int = width ?: maxWidth
 
   protected val maxColWidth: Int = maxColWidth ?: (this.width / 2.5).toInt()
 
@@ -229,8 +223,10 @@ open class CliktHelpFormatter(
     append("\n").append(renderSectionTitle(title)).append("\n")
   }
 
+  private val ansiCodeRegex = Regex("${"\u001B"}\\[[^m]*m")
+
   /** The number of visible characters in a string */
-  protected val String.graphemeLength: Int get() = graphemeLengthMpp
+  protected val String.graphemeLength: Int get() = replace(ansiCodeRegex, "").length
 
   protected data class DefinitionRow(val col1: String, val col2: String, val marker: String? = null)
 }

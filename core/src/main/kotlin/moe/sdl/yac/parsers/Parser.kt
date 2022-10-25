@@ -2,17 +2,14 @@ package moe.sdl.yac.parsers
 
 import moe.sdl.yac.core.CliktCommand
 import moe.sdl.yac.core.Context
-import moe.sdl.yac.core.FileNotFound
 import moe.sdl.yac.core.GroupableOption
 import moe.sdl.yac.core.IncorrectArgumentValueCount
-import moe.sdl.yac.core.InvalidFileFormat
 import moe.sdl.yac.core.MissingArgument
 import moe.sdl.yac.core.NoSuchOption
 import moe.sdl.yac.core.NoSuchSubcommand
 import moe.sdl.yac.core.PrintHelpMessage
 import moe.sdl.yac.core.UsageError
 import moe.sdl.yac.internal.finalizeOptions
-import moe.sdl.yac.mpp.readFileIfExists
 import moe.sdl.yac.parameters.arguments.Argument
 import moe.sdl.yac.parameters.options.EagerOption
 import moe.sdl.yac.parameters.options.Option
@@ -65,7 +62,6 @@ internal object Parser {
     var i = startingArgI
     var subcommand: CliktCommand? = null
     var canParseOptions = true
-    var canExpandAtFiles = context.expandArgumentFiles
     val invocations = mutableListOf<OptInvocation>()
     var minAliasI = 0
 
@@ -89,20 +85,9 @@ internal object Parser {
       val normTok = context.tokenTransformer(context, tok)
       val prefix = splitOptionPrefix(tok).first
       when {
-        canExpandAtFiles && tok.startsWith("@") && normTok !in optionsByName -> {
-          if (tok.startsWith("@@")) {
-            positionalArgs += tok.drop(1)
-            i += 1
-          } else {
-            tokens = loadArgFile(normTok.drop(1), context) + tokens.slice(i + 1..tokens.lastIndex)
-            i = 0
-            minAliasI = 0
-          }
-        }
         canParseOptions && tok == "--" -> {
           i += 1
           canParseOptions = false
-          canExpandAtFiles = false
         }
         canParseOptions && (
           prefix.length > 1 && prefix in prefixes
@@ -356,73 +341,6 @@ internal object Parser {
       }
     }
     return retries
-  }
-
-
-  private fun loadArgFile(filename: String, context: Context): List<String> {
-    val text = readFileIfExists(filename) ?: throw FileNotFound(filename, context)
-    val toks = mutableListOf<String>()
-    var inQuote: Char? = null
-    val sb = StringBuilder()
-    var i = 0
-    fun err(msg: String): Nothing {
-      throw InvalidFileFormat(filename, msg, text.take(i).count { it == '\n' }, context)
-    }
-    loop@ while (i < text.length) {
-      val c = text[i]
-      when {
-        c in "\r\n" && inQuote != null -> {
-          sb.append(c)
-          i += 1
-        }
-        c == '\\' -> {
-          if (i >= text.lastIndex) err(context.localization.fileEndsWithSlash())
-          if (text[i + 1] in "\r\n") {
-            do {
-              i += 1
-            } while (i <= text.lastIndex && text[i].isWhitespace())
-          } else {
-            sb.append(text[i + 1])
-            i += 2
-          }
-        }
-        c == inQuote -> {
-          toks += sb.toString()
-          sb.clear()
-          inQuote = null
-          i += 1
-        }
-        c == '#' && inQuote == null -> {
-          i = text.indexOf('\n', i)
-          if (i < 0) break@loop
-        }
-        c in "\"'" && inQuote == null -> {
-          inQuote = c
-          i += 1
-        }
-        c.isWhitespace() && inQuote == null -> {
-          if (sb.isNotEmpty()) {
-            toks += sb.toString()
-            sb.clear()
-          }
-          i += 1
-        }
-        else -> {
-          sb.append(c)
-          i += 1
-        }
-      }
-    }
-
-    if (inQuote != null) {
-      err(context.localization.unclosedQuote())
-    }
-
-    if (sb.isNotEmpty()) {
-      toks += sb.toString()
-    }
-
-    return toks
   }
 
   private fun throwExcessArgsError(positionalArgs: List<String>, excess: Int, context: Context): Nothing {
